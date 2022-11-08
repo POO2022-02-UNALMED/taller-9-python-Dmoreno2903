@@ -1,4 +1,5 @@
 from tkinter import Tk, Button, Entry
+import re
 
 # Configuración ventana principal
 root = Tk()
@@ -7,7 +8,7 @@ root.resizable(0,0)
 root.geometry()
 
 # Configuración pantalla de salida 
-pantalla = Entry(root, width=40, bg="black", fg="white", borderwidth=0, font=("arial", 18, "bold"))
+pantalla = Entry(root, width=28, bg="black", fg="white", borderwidth=0, font=("arial", 18, "bold"))
 pantalla.grid(row=0, column=0, columnspan=4, padx=1, pady=1)
 
 
@@ -21,24 +22,20 @@ def ag_pantalla(num):
 
 def cal_result():
     dState = pantalla.get()
-    operator = dState[1]
+    tState = len(dState)
+    pNum = float(re.search("^-?\\d*(\\.\\d+)?", dState).group(0))
+    sNum = float(re.search("\\d*(\\.\\d+)?$", dState).group(0))
+    operator = re.search("[-+*/]", dState[1:]).group(0) if pNum < 0 else re.search("[-+*/]", dState).group(0)
+    
+    pantalla.delete(0, tState)
     if operator == "+":
-        result = int(dState[0]) + int(dState[-1])
-        pantalla.delete(0,3)
-        pantalla.insert(0, str(result))
-    elif  operator == "-":
-        result = int(dState[0]) - int(dState[-1])
-        pantalla.delete(0,3)
-        pantalla.insert(0, str(result))
+        pantalla.insert(0, str(pNum + sNum))
+    elif operator == "-":
+        pantalla.insert(0, str(pNum - sNum))
     elif operator == "*":
-        result = int(dState[0]) * int(dState[-1])
-        pantalla.delete(0,3)
-        pantalla.insert(0, str(result))
+        pantalla.insert(0, str(pNum * sNum))
     elif operator == "/":
-        result = int(dState[0]) / int(dState[-1])
-        pantalla.delete(0,3)
-        pantalla.insert(0, str(result))
-
+        pantalla.insert(0, str(round((pNum / sNum),3)))
 
 # Configuración botones
 boton_1 = Button(root, text="1", width=9, height=3, bg="white", fg="red", borderwidth=0, cursor="hand2", command=lambda:ag_pantalla("1")).grid(row=1, column=0, padx=1, pady=1)
